@@ -45,6 +45,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
 
 /**
  * This class represents the "build" command and it holds arguments and flags specified by the user.
@@ -69,6 +70,9 @@ public class BuildCmd implements LauncherCmd {
     @SuppressWarnings("unused")
     @Parameter(names = "--java.debug", hidden = true)
     private String javaDebugPort;
+
+    @Parameter(names = "--dependency", hidden = true)
+    private List<String> dependencies;
 
     public void execute() {
         if (helpFlag) {
@@ -200,6 +204,7 @@ public class BuildCmd implements LauncherCmd {
         //Initializing the ballerina project.
         CommandUtil.initProject(Paths.get(targetGenDir));
         updateProjectOrganizationName(projectName);
+        addDependencies(dependencies);
         String projectModuleDir = CmdUtils.getProjectTargetModulePath(projectName);
         CmdUtils.createDirectory(projectModuleDir, true);
     }
@@ -216,5 +221,25 @@ public class BuildCmd implements LauncherCmd {
         String fileContent = CmdUtils.readFileAsString(ballerinaTomlFile, false);
         fileContent = fileContent.replaceFirst("org-name=.*\"", "org-name= \"wso2\"");
         Files.write(Paths.get(ballerinaTomlFile), fileContent.getBytes(StandardCharsets.UTF_8));
+    }
+
+    private void addDependencies(List<String> dependencies) throws IOException {
+        String ballerinaTomlFile = CmdUtils.getProjectTargetGenDirectoryPath(projectName) + File.separator
+                + CliConstants.BALLERINA_TOML_FILE;
+            String fileContent = CmdUtils.readFileAsString(ballerinaTomlFile, false);
+            StringBuilder tomlBuilder = new StringBuilder(fileContent);
+            tomlBuilder.append("\n[platform]\n");
+            tomlBuilder.append("target=\"java8\"\n");
+            tomlBuilder.append("\t");
+            tomlBuilder.append("[[platform.libraries]]\n");
+            tomlBuilder.append("\t");
+            tomlBuilder.append("path = \"");
+            tomlBuilder.append(dependencies.get(0));
+            tomlBuilder.append("\"");
+            String modifiedContent = tomlBuilder.toString();
+            Files.write(Paths.get(ballerinaTomlFile), modifiedContent.getBytes(StandardCharsets.UTF_8));
+
+
+
     }
 }

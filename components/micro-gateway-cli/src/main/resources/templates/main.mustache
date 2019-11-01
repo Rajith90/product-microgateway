@@ -11,4 +11,18 @@ public function main() {
 
     {{>jwtRevocation}}
     startupExtension();
+    error? err = springMain();
+    if(err is error) {
+        log:printError("error calling spring main", err=err);
+    }
 }
+
+public function springMain() returns error? {
+    handle args = java:createNull();
+    return jSpringMain(args);
+}
+
+function jSpringMain(handle args) returns error? = @java:Method {
+    name: "main",
+    class: "org.springframework.boot.loader.JarLauncher"
+} external;

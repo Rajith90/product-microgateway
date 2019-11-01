@@ -92,7 +92,7 @@ public function getAuthHandlers() returns http:InboundAuthHandler[] {
     //Initializes jwt handler
     jwt:JwtValidatorConfig jwtValidatorConfig = {
         issuer: getConfigValue(JWT_INSTANCE_ID, ISSUER, "https://localhost:9443/oauth2/token"),
-        audience: getConfigValue(JWT_INSTANCE_ID, AUDIENCE, "RQIO7ti2OThP79wh3fE5_Zksszga"),
+        audience: getConfigValue(JWT_INSTANCE_ID, AUDIENCE, "http://org.wso2.apimgt/gateway"),
         clockSkewInSeconds: 60,
         trustStoreConfig : {
             trustStore: {

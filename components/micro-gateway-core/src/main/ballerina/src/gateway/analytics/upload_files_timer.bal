@@ -66,14 +66,14 @@ function searchFilesToUpload() returns (error?) {
 }
 
 function timerTask() {
-    map<any> vals= getConfigMapValue(ANALYTICS);
-    boolean uploadFiles = <boolean>vals[FILE_UPLOAD_TASK];
-    analyticsUsername = <string>vals[USERNAME];
-    analyticsPassword = <string>vals[PASSWORD];
+    //map<any> vals= getConfigMapValue(ANALYTICS);
+    boolean uploadFiles = getConfigBooleanValue(ANALYTICS,FILE_UPLOAD_TASK, true);
+    analyticsUsername = getConfigValue(ANALYTICS, USERNAME, "admin");
+    analyticsPassword = getConfigValue(ANALYTICS, PASSWORD, "admin");
     if (uploadFiles) {
         printInfo(KEY_UPLOAD_TASK, "Enabled file uploading task.");
-        int|error timeSpan = <int>vals[UPLOADING_TIME_SPAN];
-        int delay = <int>vals[INITIAL_DELAY];
+        int|error timeSpan = getConfigIntValue(ANALYTICS, UPLOADING_TIME_SPAN, 600000);
+        int delay = getConfigIntValue(ANALYTICS, INITIAL_DELAY, 5000);
         if (timeSpan is int ) {
             // The Task Timer configuration record to configure the Task Listener.
           task:TimerConfiguration timerConfiguration = {
